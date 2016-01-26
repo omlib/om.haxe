@@ -58,6 +58,17 @@ class Hxml {
     }
 
     /**
+    */
+    public static function parseDefines( str : String ) : Array<String> {
+        var tokens = parseTokens( str );
+        var defines = new Array<String>();
+        var i = 0;
+        for( token in tokens )
+            if( token == '-D' ) defines.push( tokens[++i] ) else i++;
+        return defines;
+    }
+
+    /**
         Parses groups of actual calls to the haxe compiler when using --each --next.
     */
     /*
