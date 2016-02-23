@@ -1,4 +1,4 @@
-package haxe.compiler;
+package om.haxe.compiler;
 
 private typedef Position = {
     var start : Int;
