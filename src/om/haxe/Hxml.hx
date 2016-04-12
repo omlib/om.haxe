@@ -5,6 +5,10 @@ using StringTools;
 
 class Hxml {
 
+	public static inline var COMMENT = '#';
+
+	static var EXPR_DEFINE = ~/\-D\s*([a-zA-Z0-9_]+)(=([a-zA-Z0-9_]+))*$/;
+
     //public static function stripComments( str : String ) : String {
 
     public static function hasToken( str : String, token : String ) : Bool {
@@ -39,19 +43,15 @@ class Hxml {
     }
 
     public static function parseDefine( str : String ) : { key : String, value : String } {
-        var expr = ~/\-D\s*([a-zA-Z0-9_]+)(=([a-zA-Z0-9_]+))*$/;
-        if( expr.match( str ) ) {
-            return {
-                key: expr.matched(1),
-                value: expr.matched(3)
-            }
-        }
-        return null;
+        return EXPR_DEFINE.match( str ) ? {
+			key: EXPR_DEFINE.matched(1),
+            value: EXPR_DEFINE.matched(3)
+        } : null;
     }
 
     public static function stripLine( str : String ) : String {
         str = str.trim();
-        var i = str.indexOf( '#' );
+        var i = str.indexOf( COMMENT );
         return (i != -1) ? str.substring( 0, i-1 ) : str;
     }
 
