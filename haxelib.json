@@ -1,0 +1,14 @@
+{
+    "name": "om.haxe",
+    "version": "0.1.0",
+    "description": "",
+    "tags": ["haxe","compiler"],
+    "url": "https://github.com/tong/om.haxe",
+    "license": "GPL",
+    "contributors": ["tong"],
+    "releasenote": "See CHANGELOG.md",
+    "classPath" : "src/",
+    "dependencies": {
+        "om.core":""
+    }
+}
