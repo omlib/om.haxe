@@ -12,7 +12,7 @@ class ErrorMessage {
     public var path : String;
     public var line : Int;
     public var lines : Position;
-    public var character : Int;
+    public var character : Null<Int>;
     public var characters : Position;
     public var content : String;
 
