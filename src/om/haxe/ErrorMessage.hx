@@ -1,4 +1,4 @@
-package om.haxe.compiler;
+package om.haxe;
 
 private typedef Position = {
     var start : Int;
@@ -7,7 +7,7 @@ private typedef Position = {
 
 class ErrorMessage {
 
-    public static var EXP(default,null) = ~/^\s*(.+):([0-9]+):\s*(characters*|lines)\s([0-9]+)(-([0-9]+))?\s:\s(.+)$/i;
+    public static var PATTERN(default,null) = ~/^\s*(.+):([0-9]+):\s*(characters*|lines)\s([0-9]+)(-([0-9]+))?\s:\s(.+)$/i;
 
     public var path : String;
     public var line : Int;
@@ -16,7 +16,7 @@ class ErrorMessage {
     public var characters : Position;
     public var content : String;
 
-    public function new() {}
+    public inline function new() {}
 
     public function toString() : String {
         var str = '$path:$line: ';
@@ -30,29 +30,40 @@ class ErrorMessage {
         return str;
     }
 
+    public function toObject() {
+        return {
+            path: path,
+            line: line,
+            lines: lines,
+            character: character,
+            characters: characters,
+            content: content
+        };
+    }
+
     public static function parse( str : String ) : ErrorMessage {
-        if( EXP.match( str ) ) {
+        if( PATTERN.match( str ) ) {
             var e = new ErrorMessage();
-            e.path = EXP.matched(1);
-            e.line = Std.parseInt( EXP.matched(2) );
-            var posType = EXP.matched(3);
+            e.path = PATTERN.matched(1);
+            e.line = Std.parseInt( PATTERN.matched(2) );
+            var posType = PATTERN.matched(3);
             //trace(posType);
             switch posType {
             case 'character':
-                e.character = Std.parseInt( EXP.matched(4) );
-                e.content = EXP.matched(7);
+                e.character = Std.parseInt( PATTERN.matched(4) );
+                e.content = PATTERN.matched(7);
             case 'characters':
                 e.characters = {
-                    start: Std.parseInt(EXP.matched(4)),
-                    end: Std.parseInt(EXP.matched(6))
+                    start: Std.parseInt(PATTERN.matched(4)),
+                    end: Std.parseInt(PATTERN.matched(6))
                 };
-                e.content = EXP.matched(7);
+                e.content = PATTERN.matched(7);
             case 'lines':
                 e.lines = {
-                    start: Std.parseInt(EXP.matched(4)),
-                    end: Std.parseInt(EXP.matched(6))
+                    start: Std.parseInt(PATTERN.matched(4)),
+                    end: Std.parseInt(PATTERN.matched(6))
                 };
-                e.content = EXP.matched(7);
+                e.content = PATTERN.matched(7);
             }
             return e;
         }
