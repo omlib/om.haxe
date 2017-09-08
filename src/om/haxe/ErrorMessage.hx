@@ -5,6 +5,9 @@ private typedef Position = {
     var end : Int;
 }
 
+/**
+    Haxe compiler error message.
+*/
 class ErrorMessage {
 
     public static var PATTERN(default,null) = ~/^\s*(.+):([0-9]+):\s*(characters*|lines)\s([0-9]+)(-([0-9]+))?\s:\s(.+)$/i;

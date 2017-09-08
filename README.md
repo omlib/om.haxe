@@ -1,4 +1,4 @@
 
-# OM|HAXE
+# OM.HAXE
 
-Haxe compiler helpers.
+> Haxe compiler tools.

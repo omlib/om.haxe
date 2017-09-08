@@ -7,7 +7,7 @@ class Hxml {
 
 	public static inline var COMMENT = '#';
 
-	static var EXPR_DEFINE = ~/\-D\s*([a-zA-Z0-9_]+)(=([a-zA-Z0-9_]+))*$/;
+	public static var EXPR_DEFINE(default,null) = ~/\-D\s*([a-zA-Z0-9_]+)(=([a-zA-Z0-9_]+))*$/;
 
     //public static function stripComments( str : String ) : String {
 

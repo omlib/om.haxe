@@ -10,6 +10,8 @@ class SourceCodeUtil {
     public static var ENDS_WITH_ALPHANUMERIC(default,null) = ~/([A-Za-z0-9_]+)$/;
     public static var PACKAGE(default,null) = ~/^package\s*([a-zA-Z0-9_]*(\.[a-zA-Z0-9_]+)*)/;
 
+    public static var IMPORT_DECL(default,null) = ~/import\s*([a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)*)(?:\s+(?:in|as)\s+([a-zA-Z0-9_]+))?/g;
+    
     public static function extractPackage( code : String ) : String {
         //TODO
         if( !PACKAGE.match( code ) )

@@ -44,6 +44,3 @@ om.haxe.ErrorMessage
 --next
 -swf x
 -xml doc/swf.xml
-
-#--next
-#-cmd haxelib run dox -o doc/ -i ./ -D source-path https://github.com/tong/chrome.app/blob/master/src
