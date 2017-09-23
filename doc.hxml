@@ -1,7 +1,10 @@
 --no-output
--cp src
--lib om.core
+-lib om.haxe
+-dce no
+-D doc-gen
+om.haxe.DCEMode
 om.haxe.ErrorMessage
+om.haxe.Hxml
 --each
 
 --next
@@ -31,7 +34,8 @@ om.haxe.ErrorMessage
 --next
 -js x
 -lib hxnodejs
--xml doc/node.xml
+-xml doc/nodejs.xml
+om.haxe.LanguageServer
 
 --next
 -php x
@@ -40,7 +44,3 @@ om.haxe.ErrorMessage
 --next
 -python x
 -xml doc/python.xml
-
---next
--swf x
--xml doc/swf.xml

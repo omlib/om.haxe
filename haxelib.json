@@ -1,7 +1,7 @@
 {
     "name": "om.haxe",
-    "version": "0.1.0",
-    "description": "",
+    "version": "0.0.0",
+    "description": "Haxe compiler tools",
     "tags": ["om","haxe"],
     "url": "https://github.com/tong/om.haxe",
     "license": "OM",

@@ -14,7 +14,7 @@ class LanguageServer {
 	public var haxePath(default,null) : String;
 	public var verbose : Bool;
 
-	var proc : Process;
+	var process : Process;
 	var buffer : MessageBuffer;
 	var nextMessageLength : Int;
 	var currentRequest : Request;
@@ -27,7 +27,7 @@ class LanguageServer {
 	}
 
 	public inline function isActive() : Bool
-		return proc != null;
+		return process != null;
 
 	public function start( callback : String->Void ) {
 
@@ -43,28 +43,31 @@ class LanguageServer {
 		//var cwd = Atom.project.getPaths()[0];
 		//if( sys.FileSystem.exists( '$cwd/src' ) ) cwd += '/src';
 
-		//proc = ChildProcess.spawn( haxePath, args, { cwd: cwd } );
-		proc = ChildProcess.spawn( haxePath, args );
-		proc.on( ChildProcessEvent.Exit, handleExit );
-		proc.stderr.on( ReadableEvent.Data, handleData );
-		proc.stdout.on( ReadableEvent.Data, function(buf:Buffer) {
+		//process = ChildProcess.spawn( haxePath, args, { cwd: cwd } );
+		process = ChildProcess.spawn( haxePath, args );
+		process.on( ChildProcessEvent.Exit, handleExit );
+		process.stderr.on( ReadableEvent.Data, handleData );
+		process.stdout.on( ReadableEvent.Data, function(buf:Buffer) {
 			#if debug
 			console.debug( '%c'+buf.toString(), 'color:#EA8220;' );
 			//trace( '%c'+buf.toString(), 'color:#F68712;' );
 			#end
         });
 
+		/*
 		getVersion( function(v){
 			var version : om.Version = v;
 			callback( (version < '3.3.0') ? 'haxe >= 3.3.0 required' : null );
 		});
+		*/
+		callback( null );
 	}
 
 	public function stop() {
-		if( proc != null ) {
-            proc.removeAllListeners();
-			try proc.kill() catch(e:Dynamic) { trace(e); }
-            proc = null;
+		if( process != null ) {
+            process.removeAllListeners();
+			try process.kill() catch(e:Dynamic) { trace(e); }
+            process = null;
         }
 		var req = requestsHead;
         while( req != null ) {
@@ -75,11 +78,7 @@ class LanguageServer {
 	}
 
 	public function getVersion( callback : String->Void ) {
-		query( ['-version'],
-			null,
-			callback,
-			function(e) trace(e)
-		);
+		query( ['-version'], null, callback, function(e) trace(e) );
 	}
 
 	public function query( args : Array<String>, ?stdin : String, onResult : String->Void, onError : String->Void, ?onMessage : String->Void ) {
@@ -102,7 +101,7 @@ class LanguageServer {
         if( requestsHead != null ) {
             currentRequest = requestsHead;
             requestsHead = currentRequest.next;
-            proc.stdin.write( currentRequest.prepareBody() );
+            process.stdin.write( currentRequest.prepareBody() );
         }
     }
 

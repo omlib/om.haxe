@@ -1,4 +1,3 @@
-_*
-demo/*/bin*
+examples/
 doc/
-test/unit*
+test/bin/
