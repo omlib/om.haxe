@@ -11,25 +11,27 @@ using StringTools;
 
 class LanguageServer {
 
+//	public var onDebug(default,null) = new Emitter();
+
 	public var haxePath(default,null) : String;
 	public var verbose : Bool;
 
-	var process : Process;
+	var proc : Process;
 	var buffer : MessageBuffer;
 	var nextMessageLength : Int;
 	var currentRequest : Request;
 	var requestsHead : Request;
     var requestsTail : Request;
 
-	public function new( haxePath = 'haxe', verbose = true ) {
+	public function new( haxePath = 'haxe', verbose = false ) {
 		this.haxePath = haxePath;
 		this.verbose = verbose;
 	}
 
 	public inline function isActive() : Bool
-		return process != null;
+		return proc != null;
 
-	public function start( callback : String->Void ) {
+	public function start( callback : String->Void, ?onDebug : String->Void ) {
 
 		stop();
 
@@ -43,31 +45,40 @@ class LanguageServer {
 		//var cwd = Atom.project.getPaths()[0];
 		//if( sys.FileSystem.exists( '$cwd/src' ) ) cwd += '/src';
 
-		//process = ChildProcess.spawn( haxePath, args, { cwd: cwd } );
-		process = ChildProcess.spawn( haxePath, args );
-		process.on( ChildProcessEvent.Exit, handleExit );
-		process.stderr.on( ReadableEvent.Data, handleData );
-		process.stdout.on( ReadableEvent.Data, function(buf:Buffer) {
-			#if debug
-			console.debug( '%c'+buf.toString(), 'color:#EA8220;' );
-			//trace( '%c'+buf.toString(), 'color:#F68712;' );
-			#end
-        });
+		//proc = ChildProcess.spawn( haxePath, args, { cwd: cwd } );
+		proc = ChildProcess.spawn( haxePath, args );
+		proc.on( ChildProcessEvent.Exit, handleExit );
+		proc.stderr.on( ReadableEvent.Data, handleData );
+
+		if( onDebug != null ) {
+			proc.stdout.on( ReadableEvent.Data, function(buf:Buffer) {
+				//#if debug
+				var str = buf.toString();
+				onDebug( str );
+			//	if( verbose ) {
+					//console.log( str );
+					//console.debug( '%c'+str, 'color:#EA8220;' );
+			//	}
+				//onDebug.emit( 'message', str );
+				//#end
+			});
+		}
 
 		/*
 		getVersion( function(v){
 			var version : om.Version = v;
-			callback( (version < '3.3.0') ? 'haxe >= 3.3.0 required' : null );
+			callback( (version < '3.4.0') ? 'haxe >= 3.4.0 required' : null );
 		});
 		*/
+
 		callback( null );
 	}
 
 	public function stop() {
-		if( process != null ) {
-            process.removeAllListeners();
-			try process.kill() catch(e:Dynamic) { trace(e); }
-            process = null;
+		if( proc != null ) {
+            proc.removeAllListeners();
+			try proc.kill() catch(e:Dynamic) { trace(e); }
+            proc = null;
         }
 		var req = requestsHead;
         while( req != null ) {
@@ -93,15 +104,13 @@ class LanguageServer {
 		checkQueue();
 	}
 
-	//public function
-
 	function checkQueue() {
         if( currentRequest != null )
             return;
         if( requestsHead != null ) {
             currentRequest = requestsHead;
             requestsHead = currentRequest.next;
-            process.stdin.write( currentRequest.prepareBody() );
+            proc.stdin.write( currentRequest.prepareBody() );
         }
     }
 
@@ -238,14 +247,17 @@ private class Request {
         var buf = new StringBuf();
         var hasError = false;
         for( line in data.split( "\n" ) ) {
-            switch line.fastCodeAt( 0 ) {
+			var code = line.fastCodeAt( 0 );
+            switch code {
                 case 0x01: // print
-                    var line = line.substring(1).replace( "\x01", "\n" );
+                    var line = line.substring( 1 ).replace( "\x01", "\n" );
                     //trace("Haxe print:\n" + line);
 					//onResult( line );
 					if( onMessage != null ) onMessage( line );
                 case 0x02: // error
                     hasError = true;
+				case 0x41: // warning ("<")
+					if( onMessage != null ) onMessage( line );
                 default:
                     buf.add( line );
                     buf.addChar( "\n".code );
