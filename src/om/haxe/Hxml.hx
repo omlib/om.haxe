@@ -49,6 +49,19 @@ class Hxml {
         } : null;
     }
 
+	public static function parseLibraries( str : String ) : Array<String> {
+		var tokens = parseTokens( str );
+		var libs = new Array<String>();
+		var i = 0;
+		while( i < tokens.length ) {
+			switch tokens[i] {
+			case '-lib','-L','--library': libs.push( tokens[++i] );
+			}
+			i++;
+		}
+		return libs;
+	}
+
     public static function stripLine( str : String ) : String {
         str = str.trim();
         var i = str.indexOf( COMMENT );
