@@ -2,10 +2,11 @@ package om;
 
 #if sys
 import haxe.Json;
+import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
 
-using om.StringTools;
+using StringTools;
 #end
 
 typedef Description = {
@@ -33,20 +34,24 @@ class Haxelib {
 	public static inline var FILE_DEV = '.dev';
 
 	#if sys
+	/**
+		Haxelib path (defined by HAXELIB_PATH).
+	**/
 	public static var path(default, null) = Sys.getEnv(ENV_VAR);
 
 	/**
-		Checks if library exists in file system.
+		Returns the library path (without checking existence).
 	**/
-	public static inline function exists(lib:String):Bool {
-		return FileSystem.exists(getPath(lib.replace('.', ',')));
+	public static inline function getPath(lib:String):String {
+		return Path.join([path, lib.replace('.', ',')]);
 	}
 
 	/**
-		Returns the library path without checking existence.
+		Checks if the given library is installed.
 	**/
-	public static inline function getPath(lib:String):String {
-		return path + '/' + lib.replace('.', ',');
+	public static inline function isInstalled(lib:String):Bool {
+		final p = getPath(lib);
+		return FileSystem.exists(p) && FileSystem.isDirectory(p);
 	}
 
 	/**
@@ -58,38 +63,25 @@ class Haxelib {
 	public static function resolvePath(lib:String, active = false):String {
 		var p = getPath(lib);
 		if (active) {
-			var a = getActiveVersion(lib);
-			if (a == 'dev')
-				p = File.getContent('$p/.dev').trim();
-			else
-				p += '/$a';
+			final a = getActiveVersion(lib);
+			p = a == "dev" ? File.getContent(Path.join([p, FILE_DEV])).trim() : Path.join([p, a]);
 		}
 		return FileSystem.exists(p) ? p : null;
 	}
 
 	/**
-		Returns availble library versions.
+		Returns available library versions.
 	**/
 	public static function getVersions(lib:String):Array<String> {
-		var path = getPath(lib);
-		var versions = FileSystem.readDirectory(path).filter(e -> {
-			if (!FileSystem.isDirectory('$path/$e'))
-				return false;
-			return switch e {
-				case 'git', 'dev', 'hg': true;
-				default: SemVer.isValid(e.replace(',', '.'));
-			}
-		});
-		if (FileSystem.exists('$path/.dev'))
-			versions.push('dev');
-		var cur = '$path/.current';
-		/*
-			//TODO active first ?
-			if( FileSystem.exists( 'cur' ) ) {
-				var a = File.getContent( cur ).trim();
-			}
-		 */
-		return versions;
+		var p = getPath(lib);
+		if (!FileSystem.exists(p) || !FileSystem.isDirectory(p))
+			return [];
+		return FileSystem.readDirectory(p).filter(e -> {
+			final ep = Path.join([p, e]);
+			return FileSystem.isDirectory(ep) && switch e {
+				case FILE_DEV, FILE_CURRENT: false;
+				default: true;
+			}}).map(v -> v.replace(",", "."));
 	}
 
 	/**
@@ -97,19 +89,20 @@ class Haxelib {
 	**/
 	public static function getActiveVersion(lib:String):String {
 		var p = getPath(lib);
-		var cur = '$p/$FILE_CURRENT';
-		if (FileSystem.exists('cur'))
+		if (FileSystem.exists(Path.join([p, FILE_DEV])))
+			return "dev";
+		final cur = Path.join([p, FILE_CURRENT]);
+		if (FileSystem.exists(cur))
 			return File.getContent(cur).trim();
-		if (FileSystem.exists('$p/$FILE_DEV'))
-			return 'dev';
 		return null;
 	}
 
 	/**
+		Returns the json of the description of the libray.
 	**/
 	public static inline function getDescription(lib:String):Description {
 		var p = resolvePath(lib, true);
-		return Json.parse(File.getContent('$p/$FILE_DESCRIPTION'));
+		return p == null ? null : Json.parse(File.getContent(Path.join([p, FILE_DESCRIPTION])));
 	}
 	#end
 }

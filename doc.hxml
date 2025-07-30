@@ -1,5 +1,6 @@
 --no-output
 -lib om.haxe
+om.Haxelib
 om.haxe.DCEMode
 om.haxe.ErrorMessage
 om.haxe.Hxml
@@ -31,7 +32,7 @@ om.haxe.Hxml
 -js x
 -lib hxnodejs
 -xml doc/node.xml
-om.haxe.LanguageServer
+#om.haxe.LanguageServer
 
 --next
 -python x
