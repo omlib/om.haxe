@@ -12,16 +12,12 @@ om.haxe.Hxml
 -xml doc/cpp.xml
 
 --next
--cs x
--xml doc/cs.xml
-
---next
 -hl x
 -xml doc/hl.xml
 
 --next
--java x
--xml doc/java.xml
+--jvm x
+-xml doc/jvm.xml
 
 --next
 -lua x
@@ -36,10 +32,6 @@ om.haxe.Hxml
 -lib hxnodejs
 -xml doc/node.xml
 om.haxe.LanguageServer
-
---next
--php x
--xml doc/php.xml
 
 --next
 -python x

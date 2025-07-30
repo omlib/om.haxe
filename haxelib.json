@@ -1,14 +1,19 @@
 {
-    "name": "om.haxe",
-    "version": "0.0.0",
-    "description": "Haxe compiler tools",
-    "tags": ["om","haxe"],
-    "url": "https://github.com/omlib/om.haxe",
-    "license": "OM",
-    "contributors": ["tong"],
-    "releasenote": "See CHANGELOG.md",
-    "classPath" : "src/",
-    "dependencies": {
-        "om.core": ""
-    }
+  "name": "om.haxe",
+  "version": "0.0.0",
+  "description": "Haxe compiler tools",
+  "tags": [
+    "om",
+    "haxe"
+  ],
+  "url": "https://github.com/omlib/om.haxe",
+  "license": "Public",
+  "contributors": [
+    "tong"
+  ],
+  "releasenote": "See CHANGELOG.md",
+  "classPath": "src/",
+  "dependencies": {
+    "om.core": ""
+  }
 }

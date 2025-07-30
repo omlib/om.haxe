@@ -1,3 +1,4 @@
-examples/
-doc/
-test/bin/
+/examples/
+/doc/
+/test/*.hl
+/test/*.js
